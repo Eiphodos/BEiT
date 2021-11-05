@@ -104,7 +104,8 @@ def get_args():
                         help='Name of the dataset')
     parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
                         help='dataset path')
-    parser.add_argument('--data_tmp_path', default='$TMP', type=str, help='Temporary dataset path at Alvis')
+    parser.add_argument('--data_tmp_path', default=False, action='store_true',
+                        help='If data should be stored at a temporary path')
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
 
     parser.add_argument('--output_dir', default='',

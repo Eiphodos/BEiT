@@ -93,7 +93,7 @@ def build_beit_pretraining_dataset(args):
     print("Data Aug = %s" % str(transform))
     if args.data_set == 'DeepLesion':
         root = os.path.join(args.data_path, 'train')
-        img_folder = args.data_tmp_path
+        img_folder = '$TMPDIR'
         extract_dataset_to_local(root, img_folder)
         return ImageFolder(img_folder, transform=transform)
     else:
@@ -128,7 +128,7 @@ def build_dataset(is_train, args):
         assert len(dataset.class_to_idx) == nb_classes
     elif args.data_set == 'DeepLesion':
         root = os.path.join(args.data_path, 'train' if is_train else 'val')
-        img_folder = args.data_tmp_path
+        img_folder = '$TMPDIR'
         extract_dataset_to_local(root, img_folder)
         dataset = ImageFolder(img_folder, transform=transform)
         nb_classes = args.nb_classes
