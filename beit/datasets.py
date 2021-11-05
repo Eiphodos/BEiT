@@ -91,7 +91,13 @@ class DataAugmentationForBEiT(object):
 def build_beit_pretraining_dataset(args):
     transform = DataAugmentationForBEiT(args)
     print("Data Aug = %s" % str(transform))
-    return ImageFolder(args.data_path, transform=transform)
+    if args.data_set == 'DeepLesion':
+        root = os.path.join(args.data_path, 'train')
+        img_folder = args.data_tmp_path
+        extract_dataset_to_local(root, img_folder)
+        return ImageFolder(img_folder, transform=transform)
+    else:
+        return ImageFolder(args.data_path, transform=transform)
 
 
 def build_dataset(is_train, args):
