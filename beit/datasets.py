@@ -12,6 +12,10 @@
 import os
 import torch
 
+import numpy as np
+import multiprocessing as mp
+from itertools import repeat
+
 from torchvision import datasets, transforms
 
 from timm.data.constants import \
@@ -116,6 +120,13 @@ def build_dataset(is_train, args):
         dataset = ImageFolder(root, transform=transform)
         nb_classes = args.nb_classes
         assert len(dataset.class_to_idx) == nb_classes
+    elif args.data_set == 'DeepLesion':
+        root = os.path.join(args.data_path, 'train' if is_train else 'val')
+        img_folder = args.data_tmp_path
+        extract_dataset_to_local(root, img_folder)
+        dataset = ImageFolder(img_folder, transform=transform)
+        nb_classes = args.nb_classes
+        assert len(dataset.class_to_idx) == nb_classes
     else:
         raise NotImplementedError()
     assert nb_classes == args.nb_classes
@@ -167,3 +178,21 @@ def build_transform(is_train, args):
     t.append(transforms.ToTensor())
     t.append(transforms.Normalize(mean, std))
     return transforms.Compose(t)
+
+
+def extract_dataset_to_local(root, image_folder):
+    root, dirs, files = next(os.walk(root))
+    nprocs = mp.cpu_count()
+    pool = mp.Pool(processes=nprocs)
+    pool.starmap(extract_npz_to_disk, zip(files, repeat(root), repeat(image_folder)))
+    pool.close()
+    pool.join()
+
+
+def extract_npz_to_disk(file, root, image_folder):
+    case_folder = os.path.join(image_folder, file[:-4])
+    os.makedirs(case_folder)
+    data = np.load(os.path.join(root, file))
+    for i, arr in enumerate(file):
+        filename = file[:-4] + '_' + str(i) + '.npy'
+        np.save(os.path.join(case_folder, filename), data[arr])

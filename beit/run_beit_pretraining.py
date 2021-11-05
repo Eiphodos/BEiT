@@ -28,6 +28,7 @@ from engine_for_pretraining import train_one_epoch
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 import modeling_pretrain
+import modeling_swin
 
 
 def get_args():
