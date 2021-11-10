@@ -208,6 +208,6 @@ def extract_npz_to_disk(file, root, image_folder):
     case_folder = os.path.join(image_folder, file[:-4])
     os.makedirs(case_folder, exist_ok=True)
     data = np.load(os.path.join(root, file))
-    for i, arr in enumerate(file):
+    for i, arr in enumerate(data):
         filename = file[:-4] + '_' + str(i) + '.npy'
         np.save(os.path.join(case_folder, filename), data[arr])
