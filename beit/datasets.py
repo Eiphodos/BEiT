@@ -15,6 +15,7 @@ import torch
 import numpy as np
 import multiprocessing as mp
 from itertools import repeat
+from datetime import datetime
 
 from torchvision import datasets, transforms
 
@@ -133,7 +134,11 @@ def build_dataset(is_train, args):
     elif args.data_set == 'DeepLesion':
         root = os.path.join(args.data_path, 'train' if is_train else 'val')
         img_folder = '$TMPDIR'
+        time_start = datetime.now()
+        print("Extracting dataset to local drive")
         extract_dataset_to_local(root, img_folder)
+        time_tot = datetime.now() - time_start
+        print("Finished extracting dataset in {}".format(time_tot))
         dataset = ImageFolder(img_folder, transform=transform)
         nb_classes = args.nb_classes
         assert len(dataset.class_to_idx) == nb_classes
