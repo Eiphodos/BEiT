@@ -206,7 +206,7 @@ def extract_dataset_to_local(root, image_folder):
 
 def extract_npz_to_disk(file, root, image_folder):
     case_folder = os.path.join(image_folder, file[:-4])
-    os.makedirs(case_folder)
+    os.makedirs(case_folder, exist_ok=True)
     data = np.load(os.path.join(root, file))
     for i, arr in enumerate(file):
         filename = file[:-4] + '_' + str(i) + '.npy'
