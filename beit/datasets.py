@@ -30,9 +30,13 @@ from dataset_folder import ImageFolder
 
 class DataAugmentationForBEiT(object):
     def __init__(self, args):
-        imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
-        mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
-        std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+        if args.data_set == 'DeepLesion':
+            mean = (0.5)
+            std = (0.25)
+        else:
+            imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
+            mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+            std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
@@ -143,9 +147,14 @@ def build_dataset(is_train, args):
 
 def build_transform(is_train, args):
     resize_im = args.input_size > 32
-    imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
-    mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
-    std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+
+    if args.data_set == 'DeepLesion':
+        mean = (0.5)
+        std = (0.25)
+    else:
+        imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
+        mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+        std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
 
     if is_train:
         # this should always dispatch to transforms_imagenet_train
