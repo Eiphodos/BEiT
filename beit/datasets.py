@@ -16,6 +16,7 @@ import numpy as np
 import multiprocessing as mp
 from itertools import repeat
 from datetime import datetime
+from PIL import Image
 
 from torchvision import datasets, transforms
 
@@ -64,8 +65,8 @@ class DataAugmentationForBEiT(object):
             self.visual_token_transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize(
-                    mean=IMAGENET_INCEPTION_MEAN,
-                    std=IMAGENET_INCEPTION_STD,
+                    mean=mean,
+                    std=std,
                 ),
             ])
         else:
@@ -100,7 +101,7 @@ def build_beit_pretraining_dataset(args):
         root = os.path.join(args.data_path, 'train')
         img_folder = os.getenv('TMPDIR')
         extract_dataset_to_local(root, img_folder)
-        return ImageFolder(img_folder, transform=transform)
+        return ImageFolder(img_folder, loader=deeplesion_loader, transform=transform)
     else:
         return ImageFolder(args.data_path, transform=transform)
 
@@ -148,6 +149,14 @@ def build_dataset(is_train, args):
     print("Number of the class = %d" % args.nb_classes)
 
     return dataset, nb_classes
+
+
+def deeplesion_loader(path):
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        nimg = np.array(img).astype(np.uint8)
+        img = Image.fromarray(nimg)
+        return img.convert('RGB')
 
 
 def build_transform(is_train, args):
