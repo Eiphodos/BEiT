@@ -134,6 +134,22 @@ class VisionTransformerForMaskedImageModeling(nn.Module):
             # return the masked tokens
             return self.lm_head(x[bool_masked_pos])
 
+    def get_last_selfattention(self, x):
+        x = self.patch_embed(x)
+
+        if self.pos_embed is not None:
+            x = x + self.pos_embed
+        x = self.pos_drop(x)
+
+        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
+        for i, blk in enumerate(self.blocks):
+            if i < len(self.blocks) - 1:
+                x = blk(x, rel_pos_bias=rel_pos_bias)
+            else:
+                return blk(x, rel_pos_bias=rel_pos_bias, return_attn=True)
+
+
+
 
 @register_model
 def beit_base_patch16_224_8k_vocab(pretrained=False, **kwargs):

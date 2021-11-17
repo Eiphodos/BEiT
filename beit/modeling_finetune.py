@@ -147,7 +147,7 @@ class Attention(nn.Module):
         x = (attn @ v).transpose(1, 2).reshape(B, N, -1)
         x = self.proj(x)
         x = self.proj_drop(x)
-        return x
+        return x, attn
 
 
 class Block(nn.Module):
@@ -172,14 +172,19 @@ class Block(nn.Module):
         else:
             self.gamma_1, self.gamma_2 = None, None
 
-    def forward(self, x, rel_pos_bias=None):
+    def forward(self, x, rel_pos_bias=None, return_attn=False):
         if self.gamma_1 is None:
-            x = x + self.drop_path(self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias))
+            x, attn = self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias)
+            x = x + self.drop_path(x)
             x = x + self.drop_path(self.mlp(self.norm2(x)))
         else:
-            x = x + self.drop_path(self.gamma_1 * self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias))
+            x, attn = self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias)
+            x = x + self.drop_path(self.gamma_1 * x)
             x = x + self.drop_path(self.gamma_2 * self.mlp(self.norm2(x)))
-        return x
+        if return_attn:
+            return attn
+        else:
+            return x
 
 
 class PatchEmbed(nn.Module):
