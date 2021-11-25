@@ -49,14 +49,14 @@ def get_args():
     parser.add_argument('--layer_scale_init_value', default=0.1, type=float, 
                         help="0.1 for base, 1e-5 for large. set 0 to disable layer scale")
 
-    parser.add_argument('--num_mask_patches', default=75, type=int,
+    parser.add_argument('--num_mask_patches', default=300, type=int,
                         help='number of the visual tokens/patches need be masked')
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
     parser.add_argument('--min_mask_patches_per_block', type=int, default=16)
 
     parser.add_argument('--input_size', default=224, type=int,
                         help='images input size for backbone')
-    parser.add_argument('--second_input_size', default=112, type=int,
+    parser.add_argument('--second_input_size', default=256, type=int,
                         help='images input size for discrete vae')
 
     parser.add_argument('--drop_path', type=float, default=0.1, metavar='PCT',
